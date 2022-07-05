@@ -1,0 +1,39 @@
+class segTree {
+	public: 
+	vector<int> tree;
+	int N = 0;
+	void build(int n, vector<int> &a) {
+		while(__builtin_popcount(n) != 1) {
+			n++;
+		}
+		tree.resize(2 * n);
+		for(int i = 0; i < a.size(); i++) {
+			tree[n + i] = a[i];
+		}
+		for(int i = n - 1; i > 0; i--) {
+			tree[i] = (tree[2 * i] + tree[2 * i + 1]) % mod;
+		}
+		N = n;
+	}
+	
+	int sum(int i, int l, int r, int ql, int qr) {
+		if(qr < l || ql > r) {
+			return 0;
+		}
+		if(ql == l && r == qr) {
+			return tree[i];
+		}
+		int mid = (l + r) / 2;
+		return (sum(2 * i, l, mid, ql, min(qr, mid)) + sum(2 * i + 1, mid + 1, r, max(ql, mid + 1), qr)) % mod;
+	}
+
+	void update(int pos, int val) {
+		pos += N;
+		tree[pos] = val;
+		pos /= 2;
+		while(pos > 0) {
+			tree[pos] = tree[2 * pos] + tree[2 * pos + 1];
+			pos /= 2;
+		}
+	}
+};
