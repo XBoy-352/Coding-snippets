@@ -1,0 +1,35 @@
+const int N = 2e5+5;
+long long fact[N], invfact[N];
+const int mod = 1e9 + 7;
+
+long long po(long long a, long long b) {
+	// remove mod if not asked
+	long long res = 1;
+	while(b > 0) {
+		if(b % 2) {
+			res = res * a % mod;
+		}
+		a = a * a % mod;
+		b /= 2;
+	}
+	return res;
+}
+
+void precompute() {
+	fact[0] = fact[1] = invfact[0] = invfact[1] = 1;
+	for(int i = 2; i < N; i++) {
+		fact[i] = fact[i - 1] * i % mod;
+		invfact[i] = invfact[i - 1] * po(i, mod - 2) % mod;
+	}
+}
+
+long long nCr(long long x, long long y) {
+	if(y > x)
+		return 0;
+	long long num=fact[x];
+	num *= invfact[y];
+	num %= mod;
+	num *= invfact[x - y];
+	num %= mod;
+	return num;
+}
