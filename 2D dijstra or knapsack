@@ -1,0 +1,37 @@
+class Solution {
+public:
+    const int inf = 1e9;
+    int dp[1001][1001];
+    int f(int i, int time, vector<vector<vector<int>>>& g, vector<int>& fees) {
+        if(time < 0) 
+            return inf;
+        if(i == fees.size() - 1) 
+            return fees[i];
+        if(dp[i][time] != -1) 
+            return dp[i][time];
+        int cost = inf;
+        for(auto &child: g[i]) {
+            if(child[1] <= time) {
+                int sol = f(child[0], time - child[1], g, fees);
+                cost = min(sol, cost);
+            }
+        }
+        if(cost == inf) 
+            return dp[i][time] = inf;
+        return dp[i][time] = cost + fees[i];
+    }
+    
+    int minCost(int maxTime, vector<vector<int>>& edges, vector<int>& fees) {
+        int n = fees.size();
+        vector<vector<vector<int>>> g(n);
+        for(auto &edge: edges) {
+            int u = edge[0], v = edge[1], w = edge[2];
+            g[u].push_back({v, w});
+            g[v].push_back({u, w});
+        }
+        memset(dp,-1,sizeof(dp));
+        int ans = f(0, maxTime, g, fees);
+        if(ans == inf) return -1;
+        return ans;
+    }
+};
