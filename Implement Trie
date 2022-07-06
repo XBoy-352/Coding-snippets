@@ -1,0 +1,47 @@
+class Node {
+    public:
+        char data;
+        bool isEnd;
+        map<char, Node*>h;
+        
+        Node(char d) {
+            data=d;
+            isEnd=false;
+        }
+};
+class Trie {
+public:
+    Node* root;
+    Trie() {
+        root = new Node('\0');
+    }
+    
+    void insert(string word) {
+        Node* temp=root;
+        for(char ch: word){
+            if(temp->h.find(ch)==temp->h.end()) {
+                temp->h[ch]=new Node(ch);
+            }
+            temp=temp->h[ch];
+        }
+        temp->isEnd= true;   
+    }
+    
+    bool search(string word) {
+        Node* temp = root;
+        for(char ch: word){
+            if(temp->h.find(ch)==temp->h.end()) return false;
+            else temp=temp->h[ch];
+        }
+    return temp->isEnd;
+    }
+    
+    bool startsWith(string prefix) {
+        Node* temp = root;
+        for(char ch: prefix){
+            if(temp->h.find(ch)==temp->h.end()) return false;
+            else temp=temp->h[ch];
+        }
+    return true;
+    }
+};
