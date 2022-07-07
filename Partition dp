@@ -1,0 +1,27 @@
+int palindromicPartition(string str)
+{
+    int n = str.size();
+    vector<vector<int>> isPalindrome(n, vector<int>(n, -1));
+    for(int i = n - 1; i >= 0; i--) {
+        isPalindrome[i][i] = 1;
+        if(i + 1 < n) isPalindrome[i][i + 1] = (str[i] == str[i + 1]);
+        for(int j = i + 2; j < n; j++) {
+            isPalindrome[i][j] = (str[i] == str[j] && isPalindrome[i + 1][j - 1]);
+        }
+    }
+    const int inf = 2e9;
+    
+    *** Main part ***
+    vector<int> dp(n + 1, inf);
+    dp[0] = 0;
+    for(int i = 1; i <= n; i++) {
+        for(int j = i - 1; j >= 0; j--) {
+            if(isPalindrome[j][i - 1]) {
+                dp[i] = min(dp[i], dp[j] + 1);
+            }
+        }
+    }
+    
+    
+    return dp[n] - 1;
+}
