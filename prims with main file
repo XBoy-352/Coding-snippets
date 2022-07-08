@@ -1,0 +1,53 @@
+#include <iostream>
+#include <climits>
+using namespace std;
+
+int main() {
+    // Write your code here
+    int e,v,v1,v2,w;
+    cin>>v>>e;
+    int mat[v][v];
+    bool visited[v];
+	int wt[v];
+    int parent[v];
+    for(int i=0;i<v;i++){
+        for(int j=0;j<v;j++){
+            //initiallising with infinity everywhere
+            mat[i][j]=0;
+        }
+        //intialising with false in visited ,infinity in wt,-1 in parent everywhere
+        visited[i]=false;
+        wt[i]=INT_MAX;
+        //parent[i]=-1;
+    }
+    for(int i=0;i<e;i++){
+        cin>>v1>>v2>>w;
+        mat[v2][v1]=w;
+        mat[v1][v2]=w;
+    }
+    //visited[0]=true;
+    int curr=0;
+    wt[0]=0;
+    for(int n=0;n<v-1;n++){
+        curr=-1;
+        for(int j=0;j<v;j++){
+            if(!visited[j] && (curr==-1  || wt[curr]>wt[j])){
+                curr=j;
+            }
+        }
+        visited[curr]=true;
+        for(int i=1;i<v;i++){
+            if(visited[i]!=true && mat[curr][i]<wt[i] && mat[i][curr]!=0){
+                parent[i]=curr;
+                wt[i]=mat[curr][i];
+            }
+    	}
+        
+    }
+    for(int i=1;i<v;i++){
+        if(i<parent[i])
+    	cout<<i<<" "<<parent[i]<<" "<<wt[i]<<endl;
+        else
+    	cout<<parent[i]<<" "<<i<<" "<<wt[i]<<endl;        
+    }
+}
