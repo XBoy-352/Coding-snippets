@@ -1,0 +1,68 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+class Edge{
+    public:
+    int source;
+    int desti;
+    int wt;
+    Edge(){}
+    Edge(int a,int b, int w){
+        source=a;
+        desti=b;
+        wt=w;
+    }
+};
+
+bool comp(Edge a,Edge b){
+	return (a.wt<b.wt);
+}
+
+int findp(int i, int *parent){
+    while(parent[i]!=i){
+        i=parent[i];
+        }  
+    return parent[i];
+}
+
+int main() {
+    int e,n,a,b,w,count=0;
+    cin>>n>>e;
+    Edge *input=new Edge[e];
+    //Edge input[e];//i needed to create default cons as i ws creating objects here....bt nt giving them argument
+    //Edge *output=new Edge[n-1];
+    Edge output[n-1];
+    int *parent=new int[n];
+    for(int i=0;i<n;i++){
+        parent[i]=i;
+    }
+    for(int i=0;i<e;i++){
+        cin>>a>>b>>w;
+        Edge t(a,b,w);
+        input[i]=t;
+    }
+    sort(input,input+e,comp);                                                                         
+    
+    int i=0;
+    while(count<n-1){
+        int v1=(input+i)->source;
+        //as we 
+        int v2=input[i].desti;
+        int p1=findp(v1,parent);
+        int p2=findp(v2,parent);
+        if(p1!=p2){
+            parent[p1]=p2;
+            output[count]=input[i];
+            count++;
+        }
+        i++;
+    }
+    for(int i=0;i<n-1;i++){
+        if(output[i].source<=output[i].desti)
+        	cout<<output[i].source<<" "<<output[i].desti<<" "<<output[i].wt<<endl;
+        else
+        	cout<<output[i].desti<<" "<<output[i].source<<" "<<output[i].wt<<endl;
+            
+    }
+}
