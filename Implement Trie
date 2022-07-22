@@ -1,47 +1,57 @@
-class Node {
-    public:
-        char data;
-        bool isEnd;
-        map<char, Node*>h;
-        
-        Node(char d) {
-            data=d;
-            isEnd=false;
-        }
+struct Node {
+    Node *next[26] = {NULL};
+    bool isEnd = 0;
 };
 class Trie {
 public:
-    Node* root;
+    Node * root;
     Trie() {
-        root = new Node('\0');
+      root = new Node();
     }
     
-    void insert(string word) {
-        Node* temp=root;
-        for(char ch: word){
-            if(temp->h.find(ch)==temp->h.end()) {
-                temp->h[ch]=new Node(ch);
-            }
-            temp=temp->h[ch];
+    void insert(string a) {
+        Node *ptr = root;
+        for(auto x: a)
+        {
+            int c = x - 'a';
+            if(ptr->next[c] == NULL)
+                ptr->next[c] = new Node();
+            ptr = ptr->next[c];
         }
-        temp->isEnd= true;   
+        ptr->isEnd = 1;
     }
     
-    bool search(string word) {
-        Node* temp = root;
-        for(char ch: word){
-            if(temp->h.find(ch)==temp->h.end()) return false;
-            else temp=temp->h[ch];
+    bool search(string a) {
+        Node *ptr = root;
+        for(auto x: a)
+        {
+            int c = x - 'a';
+            if(ptr->next[c] != NULL)
+                ptr = ptr->next[c];
+            else
+                return 0;
         }
-    return temp->isEnd;
+        return ptr->isEnd;
     }
     
-    bool startsWith(string prefix) {
-        Node* temp = root;
-        for(char ch: prefix){
-            if(temp->h.find(ch)==temp->h.end()) return false;
-            else temp=temp->h[ch];
+    bool startsWith(string a) {
+        Node *ptr = root;
+        for(auto x: a)
+        {
+            int c = x - 'a';
+            if(ptr->next[c] != NULL)
+                ptr = ptr->next[c];
+            else
+                return 0;
         }
-    return true;
+        return 1;
     }
 };
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie* obj = new Trie();
+ * obj->insert(word);
+ * bool param_2 = obj->search(word);
+ * bool param_3 = obj->startsWith(prefix);
+ */
