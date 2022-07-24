@@ -1,5 +1,7 @@
+int mod = 1e9 + 7;
 class segTree {
-	public: 
+public:
+    public: 
 	vector<int> tree;
 	int N = 0;
 	void build(int n, vector<int> &a) {
@@ -15,25 +17,30 @@ class segTree {
 		}
 		N = n;
 	}
-	
-	int sum(int i, int l, int r, int ql, int qr) {
-		if(qr < l || ql > r) {
-			return 0;
-		}
-		if(ql == l && r == qr) {
-			return tree[i];
-		}
-		int mid = (l + r) / 2;
-		return (sum(2 * i, l, mid, ql, min(qr, mid)) + sum(2 * i + 1, mid + 1, r, max(ql, mid + 1), qr)) % mod;
-	}
-
-	void update(int pos, int val) {
-		pos += N;
-		tree[pos] = val;
-		pos /= 2;
-		while(pos > 0) {
-			tree[pos] = tree[2 * pos] + tree[2 * pos + 1];
-			pos /= 2;
+    segTree(vector<int>& a) {
+        build(a.size(), a);
+    }
+    void update(int ind, int val) {
+		ind += N;
+		tree[ind] = val;
+		ind /= 2;
+		while(ind > 0) {
+			tree[ind] = tree[2 * ind] + tree[2 * ind + 1];
+			ind /= 2;
 		}
 	}
+    int fun(int ind, int i, int j, int l, int r)
+    {
+        if(i > r || j < l)
+            return 0;
+        if(i >= l && j <= r)
+            return tree[ind];
+        
+        int mid = (i + j) / 2;
+        return fun(2 * ind, i, mid, l, r) + fun(2 * ind + 1, mid + 1, j, l, r);
+      
+    }
+    int sumRange(int left, int right) {
+        return fun(1, 0, N - 1, left, right);
+    }
 };
