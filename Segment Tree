@@ -39,6 +39,6 @@ public:
 		return (sum(2 * i, l, mid, ql, min(qr, mid)) + sum(2 * i + 1, mid + 1, r, max(ql, mid + 1), qr)) % mod;
 	}
     int sumRange(int left, int right) {
-        return fun(1, 0, N - 1, left, right);
+        return sum(1, 0, N - 1, left, right);
     }
 };
