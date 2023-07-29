@@ -1,0 +1,113 @@
+void heapify(vector<int> &h, int n)
+{
+    int lft = 2 * n + 1;
+    int rgt = 2 * n + 2;
+
+    int sz = h.size();
+    if(lft > sz)
+        return;
+    else if(lft == sz - 1)
+    {
+        if(h[lft] < h[n])
+        {
+            swap(h[lft], h[n]);
+            return;
+        }
+    }
+
+    
+
+    if(h[n] > h[lft] || h[n] > h[rgt])
+    {
+        if(h[n] > h[lft])
+        {
+            if(h[lft] < h[rgt])
+            {
+                swap(h[lft], h[n]);
+                heapify(h, lft);
+            }
+            else 
+            {
+                swap(h[rgt], h[n]);
+                heapify(h, rgt);
+            }
+            
+        }
+        else
+        {
+            swap(h[rgt], h[n]);
+            heapify(h, rgt);
+        }
+    }
+}
+
+void ins(vector<int> &h, int n)
+{
+    int par = (n - 1) / 2;
+    if(h[par] > h[n])
+    {
+        swap(h[par], h[n]);
+        ins(h, par);
+    }
+    return;
+}
+
+void heapInsert(vector<int> &h, int nu)
+{
+    int n = h.size();
+    h.push_back(nu);
+    ins(h, n);
+    return;
+}
+
+int heapMin(vector<int> &h)
+{
+    return h[0];
+}
+
+void removeMin(vector<int> &h)
+{
+    h[0] = h[h.size() - 1];
+    h.pop_back();
+    heapify(h, 0);
+    return;
+}
+
+int main()
+{
+    int tc; cin >> tc;
+    while(tc--)
+    {
+        int t; cin >> t;
+        vector<int> h;
+        while(t--)
+        {
+            int q; cin >> q;
+            if(q == 1)
+            {
+                cout << heapMin(h) << " ";
+                removeMin(h);
+            }
+            else
+            {
+                int nu; cin >> nu;
+                heapInsert(h, nu);
+            }
+        }
+    }
+    
+    return 0;
+}
+
+// usage 
+// input
+// 2
+// 3
+// 0 2
+// 0 1
+// 1
+// 2
+// 0 1
+// 1
+// output
+// 1 1.
