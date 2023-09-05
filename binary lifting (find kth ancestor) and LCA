@@ -1,0 +1,146 @@
+// binary lifting and LCA (binary lifting is the algo to find kth ancestor)
+
+// Errichto videos (channel Errichto Algorithms)
+// binary folding - https://www.youtube.com/watch?v=oib-XsjFa-M
+// LCA - https://www.youtube.com/watch?v=dOAxrhAUIhA
+
+// check this question for more details on how and why `up` is being calculated
+// https://leetcode.com/problems/kth-ancestor-of-a-tree-node/
+
+const int nax = 1e5 + 5;
+const int lnax = 25;
+
+class Solution {
+    
+    int up[nax][lnax];
+    int parent[nax];
+    int dep[nax];
+    
+public:
+    
+    void dfs(vector<vector<pair<int, int>>> &adj, int i, vector<int> &vis, vector<vector<int>> &d) {
+        if(vis[i])
+            return;
+        
+        vis[i] = 1;
+        
+        for(auto x: adj[i]) {
+            if(!vis[x.first]) {
+                parent[x.first] = i;
+                d[x.first] = d[i];
+                d[x.first][x.second]++;
+                dfs(adj, x.first, vis, d);
+            }
+        }
+        return;
+    }
+    
+    int depCalc(int i) {
+        if(dep[i] != -1) 
+            return dep[i];
+        
+        return dep[i] = depCalc(parent[i]) + 1;
+    }
+    
+    int findLca(int a, int b) {
+        if(dep[a] < dep[b]) 
+                swap(a, b);
+        
+        // bring a to the depth of b (get the parent of a which is at same height as b)
+        int k = dep[a] - dep[b];
+        for(int j = lnax; j >= 0; j--) {
+            if(k & (1 << j)) {
+                a = up[a][j];
+            }
+        }
+        
+        if(a == b)
+            return a;
+
+        // bringing both up logarithmically
+        for(int j = lnax - 1; j >= 0; j--) {
+            if(up[a][j] != up[b][j]) {
+                a = up[a][j];
+                b = up[b][j];
+            }
+        }
+        // with above loop we should get to the highest point in graph which is not common
+        // so one more point up we shoud have the lca
+        return parent[a];
+    }
+    
+    vector<int> minOperationsQueries(int n, vector<vector<int>>& edges, vector<vector<int>>& q) {
+        
+        // setting everything
+        for(int i = 0; i <= n; i++) {
+            for(int j = 0; j < 25; j++) {
+                up[i][j] = 0;
+            }
+            parent[i] = -1;
+            dep[i] = -1;
+        }
+        
+        // prepare adjcency list
+        vector<vector<pair<int, int>>> adj(n + 1);
+        for(auto x: edges) {
+            adj[x[0]].push_back({x[1], x[2]});
+            adj[x[1]].push_back({x[0], x[2]});
+        }
+        
+        // d[i] = vector size 26, what number occured how many times in path 0 to i
+        vector<vector<int>> d (n + 1, vector<int> (27));
+        vector<int> vis(n + 1, 0);
+        // trees are always connected
+        // root at 0
+        
+        // calculating d, setting parent
+        parent[0] = 0;
+        dfs(adj, 0, vis, d);
+        
+        // in node a and b, vector for a + b - 2 * lca(a, b) will contain how many numbers, how many times occured in path a to b
+        // so fiding lca of a, b
+        
+        // lca precompute
+        // setting depth of every node
+        dep[0] = 0;
+        for(int i = 1; i < n; i++)
+            depCalc(i);
+        
+        for(int i = 0; i < n; i++) {
+            up[i][0] = parent[i];
+        }
+        // calculating up (preCalc type) for the 25 powers of i
+        for(int j = 1; j < 25; j++) {
+            for(int i = 0; i < n; i++) {
+                up[i][j] = up[ up[i][j - 1] ][j - 1];
+            }
+        }
+
+        vector<int> res;
+    
+        for(auto x: q) {
+            
+            int a = x[0];
+            int b = x[1];
+            
+            int lca = findLca(a, b);
+            
+            vector<int> t(27, 0);
+            int mx = 0, total = 0;
+            for(int i = 0; i < 27; i++) {
+                
+                t[i] += d[a][i];
+                t[i] += d[b][i];
+                t[i] -= 2 * d[lca][i];
+                
+                mx = max(mx, t[i]);
+                total += t[i];
+                
+            }
+            
+            res.push_back(total - mx);
+        }
+        
+        return res;
+    }
+};
